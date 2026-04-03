@@ -15,11 +15,19 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            build-essential cmake git \
-            autoconf automake libtool
+            build-essential cmake \
+            automake libtool autoconf
 
-      - name: Build static
-        run: bash scripts/build.default.sh
+      - name: Build static deps
+        run: |
+          cd scripts
+          ./build_deps.sh
+
+      - name: Build
+        run: |
+          mkdir build && cd build
+          cmake .. -DXMRIG_DEPS=scripts/deps -DDONATE_LEVEL=0
+          make -j$(nproc)
 
       - name: Upload
         uses: actions/upload-artifact@v4
@@ -47,8 +55,7 @@ jobs:
         shell: msys2 {0}
         run: |
           mkdir build && cd build
-          cmake .. -G "Unix Makefiles" \
-            -DDONATE_LEVEL=0
+          cmake .. -G "Unix Makefiles" -DDONATE_LEVEL=0
           make -j$(nproc)
 
       - name: Upload
