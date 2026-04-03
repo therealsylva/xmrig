@@ -40,32 +40,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout xmrig-deps
+        run: git clone https://github.com/xmrig/xmrig-deps.git
+
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           install: >-
             mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-make
-            mingw-w64-x86_64-automake
-            mingw-w64-x86_64-libtool
-            autoconf
-
-      - name: Build static deps
-        shell: msys2 {0}
-        run: |
-          cd scripts
-          ./build_deps.sh
+            make
 
       - name: Build
         shell: msys2 {0}
         run: |
           mkdir build && cd build
-          cmake .. -G "MinGW Makefiles" \
-            -DXMRIG_DEPS=scripts/deps \
+          cmake .. -G "Unix Makefiles" \
+            -DXMRIG_DEPS=../xmrig-deps/gcc/x64 \
             -DDONATE_LEVEL=0
-          mingw32-make -j$(nproc)
+          make -j$(nproc)
 
       - name: Upload
         uses: actions/upload-artifact@v4
