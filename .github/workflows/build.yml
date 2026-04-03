@@ -16,7 +16,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             build-essential cmake \
-            libssl-dev libhwloc-dev
+            libssl-dev libhwloc-dev \
+            libuv1-dev
 
       - name: Build
         run: |
@@ -49,6 +50,7 @@ jobs:
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-openssl
             mingw-w64-x86_64-hwloc
+            mingw-w64-x86_64-libuv
 
       - name: Build
         shell: msys2 {0}
