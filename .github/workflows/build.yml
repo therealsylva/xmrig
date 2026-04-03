@@ -48,15 +48,23 @@ jobs:
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-make
-            mingw-w64-x86_64-openssl
-            mingw-w64-x86_64-hwloc
-            mingw-w64-x86_64-libuv
+            mingw-w64-x86_64-automake
+            mingw-w64-x86_64-libtool
+            autoconf
+
+      - name: Build static deps
+        shell: msys2 {0}
+        run: |
+          cd scripts
+          ./build_deps.sh
 
       - name: Build
         shell: msys2 {0}
         run: |
           mkdir build && cd build
-          cmake .. -G "MinGW Makefiles" -DDONATE_LEVEL=0
+          cmake .. -G "MinGW Makefiles" \
+            -DXMRIG_DEPS=scripts/deps \
+            -DDONATE_LEVEL=0
           mingw32-make -j$(nproc)
 
       - name: Upload
