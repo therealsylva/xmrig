@@ -43,26 +43,15 @@ jobs:
       - name: Checkout xmrig-deps
         run: git clone https://github.com/xmrig/xmrig-deps.git c:/xmrig-deps
 
-      - name: Setup MSYS2
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: UCRT64
-          install: >-
-            mingw-w64-ucrt-x86_64-gcc
-            mingw-w64-ucrt-x86_64-cmake
-            make
-
       - name: Build
-        shell: msys2 {0}
         run: |
-          mkdir build && cd build
-          cmake .. -G "Unix Makefiles" \
-            -DXMRIG_DEPS=c:/xmrig-deps/gcc/x64 \
-            -DDONATE_LEVEL=0
-          make -j$(nproc)
+          mkdir build
+          cd build
+          cmake .. -G "Visual Studio 17 2022" -A x64 -DXMRIG_DEPS=c:\xmrig-deps\msvc2022\x64 -DDONATE_LEVEL=0
+          cmake --build . --config Release
 
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: xmrig-windows
-          path: build/xmrig.exe
+          path: build/Release/xmrig.exe
