@@ -16,8 +16,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             build-essential cmake \
-            libssl-dev libhwloc-dev \
-            libuv1-dev
+            libssl-dev libhwloc-dev
+
+      - name: Build libuv static
+        run: |
+          git clone https://github.com/libuv/libuv.git --depth 1 --branch v1.48.0
+          cd libuv
+          mkdir build && cd build
+          cmake .. -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
+          make -j$(nproc)
+          sudo make install
 
       - name: Build
         run: |
@@ -26,6 +34,8 @@ jobs:
             -DOPENSSL_USE_STATIC_LIBS=TRUE \
             -DOPENSSL_CRYPTO_LIBRARY=/usr/lib/x86_64-linux-gnu/libcrypto.a \
             -DOPENSSL_SSL_LIBRARY=/usr/lib/x86_64-linux-gnu/libssl.a \
+            -DUV_LIBRARY=/usr/local/lib/libuv.a \
+            -DUV_INCLUDE_DIR=/usr/local/include \
             -DCMAKE_EXE_LINKER_FLAGS="-static" \
             -DDONATE_LEVEL=0
           make -j$(nproc)
